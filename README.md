@@ -1,6 +1,7 @@
 # NTP-projekat
 
-### Kanonov algoritam za množenje matrica
+Predefinisani projekat
+## Kanonov algoritam za množenje matrica
 
 Potrebno je napraviti:
 - sekvencijalnu verziju rešenja korišćenjem programskog jezika Python
