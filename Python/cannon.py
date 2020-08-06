@@ -1,3 +1,4 @@
+from matrix_basic import *
 
 def divide_into_blocks(M, block_number):
     res = [[0 for i in range(block_number)] for j in range(block_number)]
@@ -15,7 +16,7 @@ def divide_into_blocks(M, block_number):
     return res
 
 
-def shift_left(A):
+def initial_shift_left(A):
     # pomeramo prvu matricu na levo, prateci algoritam
     # prvi red ne pomeramo, drugi red pomeramo za jedno mesto u levo, treci red pomeramo za dva mesta u levo...
     num_of_rows = len(A)
@@ -33,14 +34,13 @@ def shift_left(A):
             A[i][num_of_cols-1] = temp
     return A
 
-def shift_up(B):
+def initial_shift_up(B):
     #pomeramo drugu matricu na gore, prateci algoritam
     num_of_rows = len(B)
     num_of_cols = len(B[0])
     for j in range(1, num_of_cols):
         repeat = j # za koliko puta se treba pomeriti kolona
         for r in range(repeat):
-            print(r, ' ', repeat)
             # shift column
             temp = B[0][j]
             for i in range(num_of_rows - 1):
@@ -48,18 +48,26 @@ def shift_up(B):
             B[num_of_rows-1][j] = temp
     return B
 
+def shift_left(A):
+    num_of_rows = len(A)
+    num_of_cols = len(A[0])
 
-if __name__ == '__main__':
-    A = [[['00'], ['01'], ['02']],
-         [['10'], ['11'], ['12'],
-         [['20'], ['21'], ['22']]]]
+    for i in range(0, num_of_rows):
+        # shift row
+        temp = A[i][0]
+        for j in range(num_of_cols - 1):
+            A[i][j] = A[i][j + 1]
 
-    X = [[12, 7, 3, 3,2,5],
-         [4, 5, 6, 3,1,2],
-         [7, 8, 9, 4, 3,1],
-         [4, 5, 6, 7, 5,3],
-         [0, 1, 9, 2, 0, 1],
-         [1, 0, 0, 4, 3, 0]]
+        A[i][num_of_cols - 1] = temp
+    return A
 
-    mx = divide_into_blocks(X, 3)
-    print(shift_up(mx))
+def shift_up(B):
+    num_of_rows = len(B)
+    num_of_cols = len(B[0])
+    for j in range(0, num_of_cols):
+        # shift column
+        temp = B[0][j]
+        for i in range(num_of_rows - 1):
+            B[i][j] = B[i + 1][j]
+        B[num_of_rows - 1][j] = temp
+    return B

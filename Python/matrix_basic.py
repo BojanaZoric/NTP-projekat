@@ -1,25 +1,18 @@
+# mnozenje matrica
+# ucitavanje matrice iz fajla
 
-def multiple_matrixes(A, B):
-
-    if len(A) == 0 or len(A[0]) == 0 or len(B) == 0 or len(B[0])==0:
+def multiple_matrixes(A, B, C, start_i, start_j):
+    if len(A) == 0 or len(A[0]) == 0 or len(B) == 0 or len(B[0]) == 0:
         print('Matrice moraju imati elemenata')
         return
     if len(A[0]) != len(B):
         print('Nisu dobre dimenzije')
         return
 
-    n = len(A)
-    m = len(B[0])
-
-    C = [[0 for i in range(m)] for j in range(n
-                                              )]
-
-    print(C)
-
     for i in range(len(A)):
         for j in range(len(B[0])):
             for k in range(len(B)):
-                C[i][j] += A[i][k] * B[k][j]
+                C[start_i + i][start_j + j] += A[i][k] * B[k][j]
     return C
 
 def read_matrix_from_file(file_path):
@@ -27,6 +20,11 @@ def read_matrix_from_file(file_path):
         l = [[int(num) for num in line.split(' ')] for line in f]
     return l
 
+def print_matrix(m):
+    for i in range(len(m)):
+        for j in range(len(m[0])):
+            print(m[i][j], end=' ')
+        print('')
 
 
 if __name__ == '__main__':
@@ -41,4 +39,3 @@ if __name__ == '__main__':
 
     print(multiple_matrixes(read_matrix_from_file('matrixA'),read_matrix_from_file('matrixA')))
 
-    print()
