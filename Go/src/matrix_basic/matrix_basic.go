@@ -1,4 +1,4 @@
-package main
+package matrix_basic
 
 import (
 	"fmt"
@@ -16,8 +16,16 @@ func (e MatrixException) Error() string{
 	return e.message
 }
 
-func multiple_matrixes(x,y [][]int) ([][]int, error) {
-	
+func Initialize_matrix(n,m int) [][]int {
+	C:= make([][]int, n)
+	for i := range C {
+		C[i] = make([]int, m)
+	}
+	return C
+}
+
+func Multiple_matrixes(x,y, C [][]int, start_i int, start_j int) ([][]int, error) {
+	fmt.Println("Multiplication " , start_i, start_j)
 	if len(x) == 0 || len(x[0]) == 0 || len(y) == 0 || len(y[0]) == 0{
 	 e := MatrixException{
 	 	"Matrice moraju imati elemenata"}
@@ -31,24 +39,19 @@ func multiple_matrixes(x,y [][]int) ([][]int, error) {
 		return nil, e
 	}
 	
-	c := make([][]int, len(x))
-	for i := range c {
-		c[i] = make([]int, len(x[0]))
-	}
-	
 	for i, _ := range x {
 		for j, _ := range y[0]{
 			for k, _ := range y{
-				c[i][j] += x[i][k] * y[k][j]
+				C[start_i + i][start_j + j] += x[i][k] * y[k][j]
 			}
 			
 		}
 	}
 	
-	return c, nil
+	return C, nil
 }
 
-func read_matrix_from_file(filepath string) ([][]int, error){
+func Read_matrix_from_file(filepath string) ([][]int, error){
 	file, err := os.Open(filepath)
 
 	if err != nil{
@@ -83,16 +86,11 @@ func read_matrix_from_file(filepath string) ([][]int, error){
 	return matrix, nil
 }
 
-func main(){
-
-	a, err := read_matrix_from_file("matrixA")
-	if (err != nil){
-		fmt.Println("Something went wrong")
+func Print_matrix(m [][]int) {
+	for i:=0;i < len(m); i++ {
+		for j:= 0; j < len(m[0]); j++ {
+			fmt.Print(m[i][j])
+		}
+		fmt.Println()
 	}
-	b, err := read_matrix_from_file("matrixA")
-	if (err != nil){
-		fmt.Println("Something went wrong")
-	}
-	fmt.Println(multiple_matrixes(a,b))
-	
 }
