@@ -1,22 +1,16 @@
 from cannon import *
+from time import time
+from matrix_basic import read_matrix_from_file
 
 if __name__ == '__main__':
 
-    BLOCKS = 3
+    start = time()
 
-    A = [[12, 7, 3, 3,2,5],
-         [4, 5, 6, 3,1,2],
-         [7, 8, 9, 4, 3,1],
-         [4, 5, 6, 7, 5,3],
-         [0, 1, 9, 2, 0, 1],
-         [1, 0, 0, 4, 3, 0]]
+    BLOCKS = 4
 
-    B = [[12, 7, 3, 3, 2, 5],
-         [4, 5, 6, 3, 1, 2],
-         [7, 8, 9, 4, 3, 1],
-         [4, 5, 6, 7, 5, 3],
-         [0, 1, 9, 2, 0, 1],
-         [1, 0, 0, 4, 3, 0]]
+    A = read_matrix_from_file('matrixA')
+
+    B = read_matrix_from_file('matrixB')
 
     ma = divide_into_blocks(A, BLOCKS)
     mb = divide_into_blocks(B, BLOCKS)
@@ -41,3 +35,6 @@ if __name__ == '__main__':
                 multiple_matrixes(ma[i][j], mb[i][j], C, i*submatrix_elements, j*submatrix_elements )
 
     print_matrix(C)
+
+    end = time()
+    print("Vreme: ", end-start)

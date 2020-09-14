@@ -38,11 +38,17 @@ func Multiple_matrixes(x,y, C [][]int, start_i int, start_j int) ([][]int, error
 		
 		return nil, e
 	}
-	
+	fmt.Print("Sabiramo " , x, y)
 	for i, _ := range x {
 		for j, _ := range y[0]{
 			for k, _ := range y{
+				fmt.Print(start_i+i, start_j+j," brojeve ", x[i][k], " " ,y[i][k])
+				fmt.Print(" Prethodno ",C[start_i + i][start_j + j])
+				fmt.Print(" ",C[start_i + i][start_j + j], "+=", x[i][k], "*", y[k][j])
+
 				C[start_i + i][start_j + j] += x[i][k] * y[k][j]
+				fmt.Println(" Naknadno ",C[start_i + i][start_j + j])
+
 			}
 			
 		}
