@@ -5,7 +5,6 @@ from math import sqrt
 from matrix_basic import read_matrix_from_file
 
 
-
 comm = MPI.COMM_WORLD
 
 comm.Barrier()
@@ -13,22 +12,20 @@ wt = MPI.Wtime()
 rank = comm.Get_rank()
 size = comm.Get_size()
 processorName = MPI.Get_processor_name()
-#print('Rank: ', rank)
 
-#print('Size: ', size)
-#print('Name: ', processorName)
 BLOCKS = int(sqrt(size))
-
-SUB_ELEM = 32
 
 for k in range(BLOCKS+1):
     i = int(rank / BLOCKS)
     j = int(rank % BLOCKS)
     if k == 0:
         if rank == 0:
-            A = read_matrix_from_file('matrixA')
+            A = read_matrix_from_file('input/matrixA')
 
-            B = read_matrix_from_file('matrixB')
+            B = read_matrix_from_file('input/matrixB')
+
+            SUB_ELEM = int(len(A)/BLOCKS)
+
             ma = divide_into_blocks(A, BLOCKS)
             mb = divide_into_blocks(B, BLOCKS)
             ma = initial_shift_left(ma)
@@ -36,47 +33,46 @@ for k in range(BLOCKS+1):
 
             for n in range(BLOCKS):
                 for m in range(BLOCKS):
-                    if(n ==0 and m == 0):
+                    if n == 0 and m == 0:
                         continue
-                    comm.send(ma[n][m], dest=(n * BLOCKS + m))
-                    comm.send(mb[n][m], dest=(n * BLOCKS + m))
+                    comm.send(ma[n][m], dest=(n * BLOCKS + m), tag=1)
+                    comm.send(mb[n][m], dest=(n * BLOCKS + m), tag=2)
 
             dataA = ma[0][0]
             dataB = mb[0][0]
 
             C = [[0 for i in range(SUB_ELEM)] for j in range(SUB_ELEM)]
-            # izracunaj
-
-        #comm.send(_A, dest=(i*BLOCKS + (j + BLOCKS - 1)%BLOCKS))
         else:
-            dataA = comm.recv(source=0)
-            dataB = comm.recv(source=0)
+            dataA = comm.recv(source=0, tag=1)
+            dataB = comm.recv(source=0, tag=2)
+            SUB_ELEM = int(len(dataA))
             C = [[0 for i in range(SUB_ELEM)] for j in range(SUB_ELEM)]
-            #print(dataA)
-            #print(dataB)
-            #comm.send(dataA, dest=(i * BLOCKS + (j + BLOCKS - 1) % BLOCKS))
-            #comm.send(dataB, dest=((i + BLOCKS - 1) % BLOCKS + j))
 
     else:
         # izracunaj
         C = multiple_matrixes(dataA, dataB, C, 0, 0)
 
-        #print("Rank:",rank, "A primljeno od " ,i * BLOCKS + (j + BLOCKS - 1) % BLOCKS, "B primljeno od ", (((i+BLOCKS-1) % BLOCKS)*BLOCKS + j))
-        #print(dataA, ' + ', dataB, ' = ',C)
-        comm.send(dataA, dest=(i * BLOCKS + (j + BLOCKS - 1) % BLOCKS))
-        comm.send(dataB, dest=(((i+BLOCKS-1) % BLOCKS)*BLOCKS + j))
+        comm.send(dataA, dest=(i * BLOCKS + (j + BLOCKS - 1) % BLOCKS), tag=1)
+        comm.send(dataB, dest=(((i+BLOCKS-1) % BLOCKS)*BLOCKS + j), tag=2)
 
-        #print('sourseA ',(i * BLOCKS + (j + 1) % BLOCKS) )
-        #print('sourseB ', (((i + 1) % BLOCKS)*BLOCKS + j))
+        dataA = comm.recv(source=(i * BLOCKS + (j + 1) % BLOCKS), tag=1)
+        dataB = comm.recv(source=(((i + 1) % BLOCKS)*BLOCKS + j), tag=2)
 
-        dataA = comm.recv(source=(i * BLOCKS + (j + 1) % BLOCKS))
-        dataB = comm.recv(source=(((i + 1) % BLOCKS)*BLOCKS + j))
+if rank == 0:
+    blocks = [[] for i in range(size)]
+    blocks[0] = C
+    for i in range(1, size):
+        blocks[i] = comm.recv(source=i)
+
+    res = [[0 for i in range(len(A))] for j in range(len(A[0]))]
+    res = blocks_to_matrix(blocks, res)
+    write_matrix_to_file("output/parallelOutput", res)
+else:
+    comm.send(C, dest=0)
 
 
 comm.Barrier()
-if (rank == 0):
+
+if rank == 0:
     wt = MPI.Wtime() - wt
     print("Vreme: ", wt)
-
-
-

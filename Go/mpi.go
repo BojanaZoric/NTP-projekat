@@ -5,13 +5,17 @@ import (
 	"matrix_basic"
 	"cannon"
 	"sync"
+	"time"
+	"math"
+	//"os"
+	//"strconv"
 )
 
 func ccx(wg *sync.WaitGroup, c chan [][]int, x [][]int, id int){
 	defer wg.Done()
 	c <- x
 	//c <- y
-	fmt.Println(x, id)
+	//fmt.Println(x, id)
 }
 
 func ccc(c chan [][]int, n int){
@@ -30,69 +34,75 @@ func ccc(c chan [][]int, n int){
 	fmt.Println(n,x, y)
 }
 
-func process(wg *sync.WaitGroup, process_id int, chanA, chanB [9]chan [][]int, C *[][]int) {
+func process(wg *sync.WaitGroup, process_id int, chanA, chanB [PROCESS]chan [][]int, C *[][]int) {
 	
 	defer wg.Done()
 
-	BLOCKS := 3
+	BLOCKS := int(math.Sqrt(float64(PROCESS)))
 	i := int(process_id / BLOCKS)
 	j := int(process_id % BLOCKS)
-	//fmt.Println("HI ", process_id)
 	var dataA, dataB [][]int
 	var ok bool
 	
 	for r:= 0; r <BLOCKS; r++{
-		fmt.Println("Iteracija ", r)
 		select {
+			// preuzimamo blok matrice A
 			case dataA, ok = <-(chanA)[process_id]:
 				if ok {
-					fmt.Printf("Value %d was read.%d\n", dataA, process_id)
+					//fmt.Printf("Value %d was read.%d\n", dataA, process_id)
 
 				} else {
-					fmt.Println("Channel closed!")
+					fmt.Println("Channel closed! Something went wrong")
 				}
 		}
 
 		select {
+			// preuzimamo blok matrice B
 			case dataB, ok = <-(chanB)[process_id]:
 				if ok {
-					fmt.Printf("Value %d was read.%d\n", dataB, process_id)
+					//fmt.Printf("Value %d was read.%d\n", dataB, process_id)
 
 				} else {
-					fmt.Println("Channel closed!")
+					fmt.Println("Channel closed! Something went wrong")
 			}
 		}
-		*C, _ = matrix_basic.Multiple_matrixes(dataA, dataB, *C, i*2,j*2)
+		*C, _ = matrix_basic.Multiple_matrixes(dataA, dataB, *C, i*len(dataA),j*len(dataA))
 		//fmt.Println(process_id,C)
 
 		select {
+			// prosledjujemo sledecem procesu blok matrice A
 			case chanA[i * BLOCKS + (j + BLOCKS - 1)%BLOCKS] <- dataA:
-				fmt.Println("Upisamp ", process_id, " A u ", (i * BLOCKS + (j + BLOCKS - 1)%BLOCKS))
 		}
 
 
 		select {
+			// prosledjujemo sledecem procesu blok matrice B
 			case chanB[((i + BLOCKS - 1) % BLOCKS)*BLOCKS + j] <- dataB:
-				fmt.Println("Upisamp "," B u ", ((i + BLOCKS - 1) % BLOCKS)*BLOCKS + j)
 	}
 	}
 }
 
+const PROCESS int = 16
+//var p, err = strconv.Atoi(os.Args[1])
+
+
 func main(){
+
+	start := time.Now()
 
 	var wg, wg2 sync.WaitGroup
 
-	A, err := matrix_basic.Read_matrix_from_file("matrixA")
+	A, err := matrix_basic.Read_matrix_from_file("input/matrixA")
 	if (err != nil){
 		fmt.Println("Something went wrong")
 	}
 
-	B, err := matrix_basic.Read_matrix_from_file("matrixA")
+	B, err := matrix_basic.Read_matrix_from_file("input/matrixB")
 	if (err != nil){
 		fmt.Println("Something went wrong")
 	}
 
-	BLOCKS := 3
+	BLOCKS := int(math.Sqrt(float64(PROCESS)))
 
 	//submatrix_elements := int(len(A) / BLOCKS)
     ma := cannon.Divide_into_blocks(A, BLOCKS)
@@ -103,10 +113,9 @@ func main(){
 	cannon.Initial_shift_left(ma)
 	cannon.Initial_shift_up(mb)
 
-	fmt.Println(C)
 
-	var chansA [9]chan [][]int
-	var chansB [9]chan [][]int
+	var chansA [PROCESS]chan [][]int
+	var chansB [PROCESS]chan [][]int
 	for i := range chansA {
 		chansA[i] = make(chan [][]int, 1)
 		chansB[i] = make(chan [][]int, 1)
@@ -118,12 +127,12 @@ func main(){
 		}
 	}
 	wg2.Wait()
-	fmt.Println("**************************")
 	for r:=0; r<BLOCKS*BLOCKS;r++{
 		wg.Add(1)
 		go process(&wg, r, chansA, chansB, &C)
 	}
 
 	wg.Wait()
-	fmt.Println("Konacno: " , C)
+	matrix_basic.Write_matrix_to_file("output/parallelOutput", &C)
+	fmt.Println("Vreme: ", time.Since(start))
 }

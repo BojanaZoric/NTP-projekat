@@ -25,7 +25,6 @@ func Initialize_matrix(n,m int) [][]int {
 }
 
 func Multiple_matrixes(x,y, C [][]int, start_i int, start_j int) ([][]int, error) {
-	fmt.Println("Multiplication " , start_i, start_j)
 	if len(x) == 0 || len(x[0]) == 0 || len(y) == 0 || len(y[0]) == 0{
 	 e := MatrixException{
 	 	"Matrice moraju imati elemenata"}
@@ -38,19 +37,12 @@ func Multiple_matrixes(x,y, C [][]int, start_i int, start_j int) ([][]int, error
 		
 		return nil, e
 	}
-	fmt.Print("Sabiramo " , x, y)
+	
 	for i, _ := range x {
 		for j, _ := range y[0]{
 			for k, _ := range y{
-				fmt.Print(start_i+i, start_j+j," brojeve ", x[i][k], " " ,y[i][k])
-				fmt.Print(" Prethodno ",C[start_i + i][start_j + j])
-				fmt.Print(" ",C[start_i + i][start_j + j], "+=", x[i][k], "*", y[k][j])
-
 				C[start_i + i][start_j + j] += x[i][k] * y[k][j]
-				fmt.Println(" Naknadno ",C[start_i + i][start_j + j])
-
 			}
-			
 		}
 	}
 	
@@ -71,7 +63,6 @@ func Read_matrix_from_file(filepath string) ([][]int, error){
 	matrix := make([][]int, 0)
 
     for scanner.Scan() {
-		// fmt.Println(scanner.Text())
 		line := scanner.Text()
 		tokens := strings.Split(line, " ")
 		matrix_row := make([]int,0)
@@ -99,4 +90,18 @@ func Print_matrix(m [][]int) {
 		}
 		fmt.Println()
 	}
+}
+
+func Write_matrix_to_file(filepath string, C *[][]int)error{
+	file, err := os.Create(filepath)
+    if err != nil {
+        return err
+    }
+    defer file.Close()
+
+    w := bufio.NewWriter(file)
+    for i:=0;i < len(*C); i++ {
+        fmt.Fprintln(w, strings.Trim(strings.Join(strings.Fields(fmt.Sprint((*C)[i])), " "), "[]"))
+    }
+    return w.Flush()
 }

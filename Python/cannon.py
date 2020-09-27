@@ -1,8 +1,18 @@
 from matrix_basic import *
+import math
 
-def divide_into_blocks(M, block_number):
+"""
+Modul za rad sa matricama prema Cannon-ovom algoritmu
+- podela matrice na blokova matrica manjih dimenzija
+- preslikavanje blokova na matricu 
+- inicijalno pomeranje matrica na levo i na gore (prvi korak u algoritmu)
+- pomeranje matrica na gore i na levo (ostali koraci u algoritmu)
+"""
+
+
+def divide_into_blocks(matrix, block_number):
     res = [[0 for i in range(block_number)] for j in range(block_number)]
-    submatrix_elements = int(len(M)/block_number)
+    submatrix_elements = int(len(matrix)/block_number)
 
     for i in range(block_number):
         for j in range(block_number):
@@ -11,9 +21,21 @@ def divide_into_blocks(M, block_number):
             startj = j*submatrix_elements
             endj = (j+1)*submatrix_elements
 
-            res[i][j] = [M[k][startj:endj] for k in range(starti,endi)]
-            #print(res[i][j])
+            res[i][j] = [matrix[k][startj:endj] for k in range(starti, endi)]
     return res
+
+
+def blocks_to_matrix(blocks, matrix):
+    n = len(blocks[0])
+    m = len(blocks[0][0])
+
+    for i in range(len(blocks)):
+        starti = int(i / (math.sqrt(len(blocks))))*n
+        startj = int(i % (math.sqrt(len(blocks))))*m
+        for j in range(len(blocks[i])):
+            for k in range(len(blocks[i][j])):
+                matrix[starti+j][startj + k] = blocks[i][j][k]
+    return matrix
 
 
 def initial_shift_left(A):
@@ -34,6 +56,7 @@ def initial_shift_left(A):
             A[i][num_of_cols-1] = temp
     return A
 
+
 def initial_shift_up(B):
     #pomeramo drugu matricu na gore, prateci algoritam
     num_of_rows = len(B)
@@ -48,6 +71,7 @@ def initial_shift_up(B):
             B[num_of_rows-1][j] = temp
     return B
 
+
 def shift_left(A):
     num_of_rows = len(A)
     num_of_cols = len(A[0])
@@ -60,6 +84,7 @@ def shift_left(A):
 
         A[i][num_of_cols - 1] = temp
     return A
+
 
 def shift_up(B):
     num_of_rows = len(B)
