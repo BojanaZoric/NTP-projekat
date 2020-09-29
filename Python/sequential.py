@@ -1,19 +1,18 @@
 from cannon import *
-from time import time
 from matrix_basic import read_matrix_from_file
 import sys
 import math
+from measure import timeit
 
-if __name__ == '__main__':
 
+@timeit
+def main():
 # Block broj blokova u REDU
 # Ukupan broj blokova BLOCKS*BLOCKS
     try:
         BLOCKS = math.sqrt(sys.argv[1])
     except:
         BLOCKS = 2
-
-    start = time()
 
     A = read_matrix_from_file('input/matrixA')
 
@@ -40,7 +39,8 @@ if __name__ == '__main__':
             for j in range(len(ma[0])):
                 multiple_matrixes(ma[i][j], mb[i][j], C, i*submatrix_elements, j*submatrix_elements )
 
-
     write_matrix_to_file("output/serialOutput", C)
-    end = time()
-    print("Vreme: ", end-start)
+
+
+if __name__ == '__main__':
+    main()

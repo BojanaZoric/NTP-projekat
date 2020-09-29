@@ -1,5 +1,6 @@
 from matrix_basic import *
 import math
+from measure import *
 
 """
 Modul za rad sa matricama prema Cannon-ovom algoritmu
@@ -9,7 +10,7 @@ Modul za rad sa matricama prema Cannon-ovom algoritmu
 - pomeranje matrica na gore i na levo (ostali koraci u algoritmu)
 """
 
-
+@timeit
 def divide_into_blocks(matrix, block_number):
     res = [[0 for i in range(block_number)] for j in range(block_number)]
     submatrix_elements = int(len(matrix)/block_number)
@@ -25,6 +26,7 @@ def divide_into_blocks(matrix, block_number):
     return res
 
 
+@timeit
 def blocks_to_matrix(blocks, matrix):
     n = len(blocks[0])
     m = len(blocks[0][0])
@@ -38,6 +40,7 @@ def blocks_to_matrix(blocks, matrix):
     return matrix
 
 
+@timeit
 def initial_shift_left(A):
     # pomeramo prvu matricu na levo, prateci algoritam
     # prvi red ne pomeramo, drugi red pomeramo za jedno mesto u levo, treci red pomeramo za dva mesta u levo...
@@ -57,6 +60,7 @@ def initial_shift_left(A):
     return A
 
 
+@timeit
 def initial_shift_up(B):
     #pomeramo drugu matricu na gore, prateci algoritam
     num_of_rows = len(B)
@@ -72,6 +76,7 @@ def initial_shift_up(B):
     return B
 
 
+@timeit
 def shift_left(A):
     num_of_rows = len(A)
     num_of_cols = len(A[0])
@@ -86,6 +91,7 @@ def shift_left(A):
     return A
 
 
+@timeit
 def shift_up(B):
     num_of_rows = len(B)
     num_of_cols = len(B[0])

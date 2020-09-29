@@ -1,3 +1,4 @@
+from measure import timeit
 """
 Modul za osnovne operacije sa matricama
 - ucitavanje matrice iz fajla
@@ -6,19 +7,19 @@ Modul za osnovne operacije sa matricama
 - prikaz matrice
 """
 
-
+@timeit
 def read_matrix_from_file(file_path):
     with open(file_path, 'r') as f:
         m = [[int(num) for num in line.split(' ')] for line in f]
     return m
 
-
+@timeit
 def write_matrix_to_file(filepath, matrix):
     with open(filepath, "w") as txt_file:
         for line in matrix:
             txt_file.write(" ".join(map(str, line)) + "\n")  # works with any number of elements in a line
 
-
+@timeit
 def multiple_matrixes(A, B, C, start_i, start_j):
     if len(A) == 0 or len(A[0]) == 0 or len(B) == 0 or len(B[0]) == 0:
         print('Matrice moraju imati elemenata')
