@@ -1,9 +1,6 @@
 Class {
 	#name : #MatrixA,
 	#superclass : #Matrix,
-	#instVars : [
-		'matrix'
-	],
 	#category : #Cannons
 }
 
@@ -26,6 +23,7 @@ MatrixA >> initialShift [
 MatrixA >> initialize [ 
 	super initialize .
 	matrix := super readMatrix: 'matrixA.txt'.
+	color:= Color lightBlue .
 	^ self
 	
 ]

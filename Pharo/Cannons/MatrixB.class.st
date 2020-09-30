@@ -23,7 +23,8 @@ MatrixB >> initialShift [
 MatrixB >> initialize [ 
 	super initialize .
 	matrix := super readMatrix: 'matrixB.txt'.
-	^ self
+	color:= Color lightRed .
+	 ^ self
 ]
 
 { #category : #combining }

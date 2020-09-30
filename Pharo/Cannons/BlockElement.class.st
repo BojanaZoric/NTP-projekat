@@ -53,6 +53,34 @@ self
 	^ self
 ]
 
+{ #category : #'as yet unclassified' }
+BlockElement >> makeElementFrom: b number: n color: c [
+block := b.
+self
++ (RTBox new color: c;
+	borderColor: Color black;
+	borderWidth: 1;
+	width: size;
+	height: size);
+	model: n";
+	+ RTLabel" .
+	shape := (RTBox new size: (size/2-6)).
+	
+	innerElements  := (Array new: (block size)*(block size)).
+	
+	  (1 to: (block size) do: [ :i|
+			1 to: (block size) do: [ :j|
+				innerElements at:(i-1*(block size)+j) put: (RTElement new + (RTBox new  width: size/(block size) -10;height: size/(block size) -10; borderColor: Color black; color: c );model:((block at:i) at:j); + (RTLabel color: Color black ) )
+
+				 ]
+		 ])
+	.
+	RTGridLayout new on: innerElements.
+	RTNest new 
+		on: self nest: innerElements.
+	^ self
+]
+
 { #category : #accessing }
 BlockElement >> size: s [
  size := s
