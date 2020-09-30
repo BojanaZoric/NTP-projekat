@@ -15,7 +15,7 @@ func main(){
 	start := time.Now()
 
 	temp := os.Args[1]
-	fmt.Println(temp)
+
 	BLOCKS, err := strconv.Atoi(temp)
 	
 	if BLOCKS <=0 || err != nil {
