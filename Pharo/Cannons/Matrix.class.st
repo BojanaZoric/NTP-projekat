@@ -5,18 +5,25 @@ Class {
 		'elements',
 		'panel',
 		'size',
-		'matrix'
+		'matrix',
+		'blockNum',
+		'color'
 	],
 	#category : #Cannons
 }
 
 { #category : #adding }
+Matrix >> addBorderAt:i and: j [
+	(elements  at:i-1*size +j) shape borderColor: Color red; borderWidth: 4
+]
+
+{ #category : #adding }
 Matrix >> addElementAt: i and: j translate: t [
 	| element |
 	element := BlockElement new.
-	element size: 50.
-	element makeElementFrom: (self getSubmatrixAt: (j-1*size +i)) number:  (j-1*size +i).
-	element translateBy: ((i-1)*50+ (5*i)+t)@((j-1)*50+ (5*j)+t).
+	element size: 200//size.
+	element makeElementFrom: (self getSubmatrixAt: (j-1*size +i)) number:  (j-1*size +i) color: color.
+	element translateBy: ((i-1)*(200/size)+ (5*i)-t)@((j-1)*(200/size)+ (5*j)).
 	elements at:(j-1*size + i) put: element .
 	panel add:element.
 	panel addAll: (element innerElements)
@@ -32,7 +39,8 @@ Matrix >> addOnPanel: p [
 { #category : #'as yet unclassified' }
 Matrix >> getSubmatrixAt: p [
 	 |subm i j row blocks elemNum|
-	blocks  := 5.
+	blockNum := 4.
+	blocks  := blockNum.
 	elemNum := matrix size / blocks.
 	i := (p-1)//blocks * elemNum +1.
 	j := (p-1)%blocks  *elemNum +1.
