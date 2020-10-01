@@ -117,10 +117,10 @@ func main(){
 	var chansA []chan [][]int
 	var chansB []chan [][]int
 	for i :=0 ; i< PROCESS;i++ {
-		//chansA[i] = make(chan [][]int, 1)
+
 		chansA = append(chansA, make(chan [][]int,1))
 		chansB = append(chansB, make(chan [][]int,1))
-		//chansB[i] = make(chan [][]int, 1)
+
 		if i < BLOCKS*BLOCKS{
 			wg2.Add(1)
 			go ccx(&wg2, chansA[i], ma[i/BLOCKS][i%BLOCKS], i)
@@ -129,11 +129,12 @@ func main(){
 		}
 	}
 	wg2.Wait()
-	for r:=0; r<BLOCKS*BLOCKS;r++{
+	for r:=0; r<BLOCKS*BLOCKS-1;r++{
 		wg.Add(1)
 		go process(&wg, r, chansA, chansB, &C)
 	}
-
+	process(&wg, BLOCKS*BLOCKS-1, chansA, chansB, &C)
+	wg.Add(1)
 	wg.Wait()
 	matrix_basic.Write_matrix_to_file("output/parallelOutput", &C)
 	fmt.Println("Vreme: ", time.Since(start))
