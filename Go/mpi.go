@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 	"math"
-	//"os"
-	//"strconv"
+	"os"
+	"strconv"
 )
 
 func ccx(wg *sync.WaitGroup, c chan [][]int, x [][]int, id int){
@@ -34,11 +34,11 @@ func ccc(c chan [][]int, n int){
 	fmt.Println(n,x, y)
 }
 
-func process(wg *sync.WaitGroup, process_id int, chanA, chanB [PROCESS]chan [][]int, C *[][]int) {
+func process(wg *sync.WaitGroup, process_id int, chanA, chanB []chan [][]int, C *[][]int) {
 	
 	defer wg.Done()
 
-	BLOCKS := int(math.Sqrt(float64(PROCESS)))
+	BLOCKS := int(math.Sqrt(float64(len(chanA))))
 	i := int(process_id / BLOCKS)
 	j := int(process_id % BLOCKS)
 	var dataA, dataB [][]int
@@ -82,17 +82,17 @@ func process(wg *sync.WaitGroup, process_id int, chanA, chanB [PROCESS]chan [][]
 	}
 }
 
-const PROCESS int = 16
-//var p, err = strconv.Atoi(os.Args[1])
-
-
+ 
 func main(){
 
 	start := time.Now()
 
+	temp := os.Args[1]
+
+	PROCESS, err := strconv.Atoi(temp)
 	var wg, wg2 sync.WaitGroup
 
-	A, err := matrix_basic.Read_matrix_from_file("input/matrixA")
+	A, err :=  matrix_basic.Read_matrix_from_file("input/matrixA")
 	if (err != nil){
 		fmt.Println("Something went wrong")
 	}
@@ -114,11 +114,13 @@ func main(){
 	cannon.Initial_shift_up(mb)
 
 
-	var chansA [PROCESS]chan [][]int
-	var chansB [PROCESS]chan [][]int
-	for i := range chansA {
-		chansA[i] = make(chan [][]int, 1)
-		chansB[i] = make(chan [][]int, 1)
+	var chansA []chan [][]int
+	var chansB []chan [][]int
+	for i :=0 ; i< PROCESS;i++ {
+
+		chansA = append(chansA, make(chan [][]int,1))
+		chansB = append(chansB, make(chan [][]int,1))
+
 		if i < BLOCKS*BLOCKS{
 			wg2.Add(1)
 			go ccx(&wg2, chansA[i], ma[i/BLOCKS][i%BLOCKS], i)
@@ -127,11 +129,12 @@ func main(){
 		}
 	}
 	wg2.Wait()
-	for r:=0; r<BLOCKS*BLOCKS;r++{
+	for r:=0; r<BLOCKS*BLOCKS-1;r++{
 		wg.Add(1)
 		go process(&wg, r, chansA, chansB, &C)
 	}
-
+	process(&wg, BLOCKS*BLOCKS-1, chansA, chansB, &C)
+	wg.Add(1)
 	wg.Wait()
 	matrix_basic.Write_matrix_to_file("output/parallelOutput", &C)
 	fmt.Println("Vreme: ", time.Since(start))
