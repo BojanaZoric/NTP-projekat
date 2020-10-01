@@ -1,5 +1,7 @@
 # NTP-projekat
 
+Bojana Zorić SW9-2016
+
 Predefinisani projekat
 ## Kanonov algoritam za množenje matrica (Cannon's algorithm)
 
